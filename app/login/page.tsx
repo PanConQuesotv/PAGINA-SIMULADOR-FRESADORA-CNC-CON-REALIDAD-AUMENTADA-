@@ -1,143 +1,75 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { login } from "./actions";
 
 export default function LoginPage() {
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  setErrorMsg("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // 1️⃣ Login
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+    const res = await login(email, password);
 
-  if (error) {
-    setErrorMsg(error.message);
-    setLoading(false);
-    return;
-  }
+    if (res.error) {
+      setError(res.error);
+      return;
+    }
 
-  const user = data.user;
-
-  // 2️⃣ Buscar perfil
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError || !profile) {
-    setErrorMsg("No se pudo obtener el rol.");
-    setLoading(false);
-    return;
-  }
-
-  // 3️⃣ REDIRECCIÓN SEGÚN ROL
-  if (profile.role === "admin") {
-    router.push("/admin");
-  } else if (profile.role === "teacher") {
-    router.push("/teacher");
-  } else {
-    router.push("/student");
-  }
-
-  setLoading(false);
-};
-
+    // REDIRECCIÓN SEGÚN ROL
+    if (res.role === "admin") {
+      router.push("/admin");
+    } else if (res.role === "teacher") {
+      router.push("/teacher/classes");
+    } else {
+      router.push("/student");
+    }
+  };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        background: "#0d3b2e", // verde oscuro
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 400,
-          background: "#ffffff",
-          padding: 30,
-          borderRadius: 12,
-          boxShadow: "0 0 30px rgba(0,0,0,0.3)",
-          color: "#000", // <- texto negro
-        }}
-      >
-        <h1 style={{ textAlign: "center", marginBottom: 20, color: "#000" }}>
-          Iniciar Sesión
-        </h1>
+    <div style={{ padding: 40, maxWidth: 400, margin: "0 auto" }}>
+      <h1>Iniciar Sesión</h1>
 
-        <form onSubmit={handleLogin}>
-          <label style={{ color: "#000" }}>Email</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 12,
-              border: "1px solid #ccc",
-              borderRadius: 6,
-              color: "#000", // <- texto negro
-            }}
-          />
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-          <label style={{ color: "#000" }}>Contraseña</label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 12,
-              border: "1px solid #ccc",
-              borderRadius: 6,
-              color: "#000", // <- texto negro
-            }}
-          />
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Correo"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
+        />
 
-          {errorMsg && (
-            <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>
-          )}
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
+        />
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: 12,
-              background: "#0d3b2e",
-              color: "white",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            {loading ? "Cargando..." : "Ingresar"}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: 12,
+            background: "#0b3d2c",
+            color: "white",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+          }}
+        >
+          Entrar
+        </button>
+      </form>
     </div>
   );
 }
