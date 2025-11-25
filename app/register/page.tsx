@@ -19,10 +19,7 @@ export default function RegisterPage() {
     setErrorMsg("");
 
     // 1️⃣ Crear usuario en Auth
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error || !data.user) {
       setErrorMsg(error?.message || "Error desconocido");
@@ -32,14 +29,12 @@ export default function RegisterPage() {
 
     const userId = data.user.id;
 
-    // 2️⃣ Insertar perfil en la tabla profiles con role = 'student' por defecto
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert({
-        id: userId,
-        full_name: fullName,
-        role: "student",
-      });
+    // 2️⃣ Insertar perfil con rol "student" por defecto
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: userId,
+      full_name: fullName,
+      role: "student",
+    });
 
     if (profileError) {
       setErrorMsg(profileError.message);
@@ -47,34 +42,14 @@ export default function RegisterPage() {
       return;
     }
 
-    alert("Cuenta creada. Inicia sesión.");
+    alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
     router.push("/login");
   };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        background: "#0d3b2e",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 400,
-          background: "#ffffff",
-          padding: 30,
-          borderRadius: 12,
-          boxShadow: "0 0 30px rgba(0,0,0,0.3)",
-          color: "#000",
-        }}
-      >
-        <h1 style={{ textAlign: "center", marginBottom: 20 }}>Crear Cuenta</h1>
-
+    <div style={containerStyle}>
+      <div style={formContainerStyle}>
+        <h1 style={titleStyle}>Crear Cuenta</h1>
         <form onSubmit={handleRegister}>
           <label>Nombre Completo</label>
           <input
@@ -113,6 +88,28 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+// ==================== ESTILOS ====================
+const containerStyle: React.CSSProperties = {
+  height: "100vh",
+  background: "#0d3b2e",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: 20,
+};
+
+const formContainerStyle: React.CSSProperties = {
+  width: "100%",
+  maxWidth: 400,
+  background: "#ffffff",
+  padding: 30,
+  borderRadius: 12,
+  boxShadow: "0 0 30px rgba(0,0,0,0.3)",
+  color: "#000",
+};
+
+const titleStyle: React.CSSProperties = { textAlign: "center", marginBottom: 20 };
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
