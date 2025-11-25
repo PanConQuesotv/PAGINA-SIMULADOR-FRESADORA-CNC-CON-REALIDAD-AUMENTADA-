@@ -1,75 +1,137 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { login } from "./actions";
 
 export default function LoginPage() {
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
 
-    const res = await login(email, password);
+    // Login normal
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    if (res.error) {
-      setError(res.error);
+    if (signInError || !signInData.user) {
+      setError("Correo o contraseña incorrectos");
       return;
     }
 
-    // REDIRECCIÓN SEGÚN ROL
-    if (res.role === "admin") {
-      router.push("/admin");
-    } else if (res.role === "teacher") {
-      router.push("/teacher/classes");
-    } else {
-      router.push("/student");
+    // Obtener el perfil y rol
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", signInData.user.id)
+      .single();
+
+    if (profileError || !profile) {
+      setError("No se pudo obtener el rol del usuario");
+      return;
     }
+
+    // Redirigir según el rol
+    if (profile.role === "admin") router.push("/admin");
+    else if (profile.role === "teacher") router.push("/teacher/classes");
+    else router.push("/student");
   };
 
   return (
-    <div style={{ padding: 40, maxWidth: 400, margin: "0 auto" }}>
-      <h1>Iniciar Sesión</h1>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#0b2f26",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+      }}
+    >
+      <div
+        style={{
+          background: "white",
+          padding: 30,
+          borderRadius: 12,
+          width: "100%",
+          maxWidth: 400,
+        }}
+      >
+        <h1 style={{ textAlign: "center", marginBottom: 20 }}>Iniciar Sesión</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && (
+          <div
+            style={{
+              background: "#ffdddd",
+              color: "#a70000",
+              padding: 10,
+              borderRadius: 6,
+              marginBottom: 15,
+            }}
+          >
+            {error}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ width: "100%", padding: 10, marginBottom: 10 }}
-        />
+        <form onSubmit={handleSubmit}>
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
+            required
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 15,
+              borderRadius: 8,
+              border: "1px solid #ccc",
+            }}
+          />
 
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ width: "100%", padding: 10, marginBottom: 10 }}
-        />
+          <label>Contraseña</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPassword(e.target.value)
+            }
+            required
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 20,
+              borderRadius: 8,
+              border: "1px solid #ccc",
+            }}
+          />
 
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: 12,
-            background: "#0b3d2c",
-            color: "white",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-          }}
-        >
-          Entrar
-        </button>
-      </form>
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: 12,
+              background: "#0d3b2e",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Entrar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
