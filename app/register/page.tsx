@@ -8,8 +8,10 @@ export default function RegisterPage() {
   const router = useRouter();
 
   const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -18,124 +20,141 @@ export default function RegisterPage() {
     setLoading(true);
     setErrorMsg("");
 
-    try {
-      // 🔹 Crear usuario en Supabase Auth
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName } },
-      });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: role,
+        },
+      },
+    });
 
-      if (error) {
-        // Extraer propiedades opcionales de manera segura
-        const details = (error as any).details;
-        const hint = (error as any).hint;
-        const code = (error as any).code;
-
-        console.error("Error completo:", error);
-        console.error("Detalle:", details);
-        console.error("Hint:", hint);
-        console.error("Code:", code);
-
-        setErrorMsg(
-          error.message +
-            (details ? ` | Detalles: ${details}` : "") +
-            (hint ? ` | Hint: ${hint}` : "")
-        );
-        return;
-      }
-
-      alert("Cuenta creada. Revisa tu correo para confirmar e inicia sesión.");
-      router.push("/login");
-    } catch (err: any) {
-      console.error("Error inesperado:", err);
-      setErrorMsg(err.message || "Error desconocido al registrar el usuario.");
-    } finally {
+    if (error) {
+      setErrorMsg(error.message);
       setLoading(false);
+      return;
     }
+
+    alert("Cuenta creada. Ahora inicia sesión.");
+    router.push("/login");
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={formContainerStyle}>
-        <h1 style={titleStyle}>Crear Cuenta</h1>
+    <div
+      style={{
+        height: "100vh",
+        background: "#0d3b2e",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 400,
+          background: "#ffffff",
+          padding: 30,
+          borderRadius: 12,
+          boxShadow: "0 0 30px rgba(0,0,0,0.3)",
+          color: "#000",
+        }}
+      >
+        <h1 style={{ textAlign: "center", marginBottom: 20, color: "#000" }}>
+          Crear Cuenta
+        </h1>
 
         <form onSubmit={handleRegister}>
-          <label>Nombre Completo</label>
+          <label style={{ color: "#000" }}>Nombre Completo</label>
           <input
             type="text"
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            style={inputStyle}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
           />
 
-          <label>Email</label>
+          <label style={{ color: "#000" }}>Email</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={inputStyle}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
           />
 
-          <label>Contraseña</label>
+          <label style={{ color: "#000" }}>Contraseña</label>
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
           />
 
-          {errorMsg && <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>}
+          <label style={{ color: "#000" }}>Rol</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 20,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
+          >
+            <option value="student">Estudiante</option>
+            <option value="teacher">Docente</option>
+          </select>
 
-          <button type="submit" disabled={loading} style={btnStyle}>
-            {loading ? "Creando..." : "Registrarse"}
+          {errorMsg && (
+            <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: 12,
+              background: "#0d3b2e",
+              color: "white",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            {loading ? "Cargando..." : "Registrarse"}
           </button>
         </form>
       </div>
     </div>
   );
 }
-
-// ==================== ESTILOS ====================
-const containerStyle: React.CSSProperties = {
-  height: "100vh",
-  background: "#0d3b2e",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: 20,
-};
-
-const formContainerStyle: React.CSSProperties = {
-  width: "100%",
-  maxWidth: 400,
-  background: "#ffffff",
-  padding: 30,
-  borderRadius: 12,
-  boxShadow: "0 0 30px rgba(0,0,0,0.3)",
-  color: "#000",
-};
-
-const titleStyle: React.CSSProperties = { textAlign: "center", marginBottom: 20 };
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: 10,
-  marginBottom: 12,
-  border: "1px solid #ccc",
-  borderRadius: 6,
-};
-
-const btnStyle: React.CSSProperties = {
-  width: "100%",
-  padding: 12,
-  background: "#0d3b2e",
-  color: "white",
-  border: "none",
-  borderRadius: 6,
-  cursor: "pointer",
-  fontWeight: "bold",
-};
