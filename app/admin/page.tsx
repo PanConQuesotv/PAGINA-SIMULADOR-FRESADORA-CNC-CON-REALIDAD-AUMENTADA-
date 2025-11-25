@@ -33,7 +33,7 @@ export default function AdminPage() {
     loadUsers();
   };
 
-  // --- CARGAR USUARIOS PARA ADMINISTRAR SUS ROLES ---
+  // --- CARGAR USUARIOS ---
   const loadUsers = async () => {
     const { data, error } = await supabase
       .from("profiles")
@@ -43,7 +43,7 @@ export default function AdminPage() {
     setLoading(false);
   };
 
-  // --- CAMBIAR ROL DE USUARIO ---
+  // --- CAMBIAR ROL ---
   const updateRole = async (id: string, newRole: string) => {
     await supabase
       .from("profiles")
@@ -131,34 +131,28 @@ export default function AdminPage() {
                 <td style={tdStyle}>{user.full_name || "(Sin nombre)"}</td>
                 <td style={tdStyle}>{user.role}</td>
                 <td style={tdStyle}>
-                  {/* CAMBIAR ROL */}
-                  <button
-                    onClick={() => updateRole(user.id, "student")}
-                    style={btnSmall}
-                  >
-                    Student
-                  </button>
-
-                  <button
-                    onClick={() => updateRole(user.id, "teacher")}
-                    style={btnSmall}
-                  >
-                    Teacher
-                  </button>
-
-                  <button
-                    onClick={() => updateRole(user.id, "admin")}
-                    style={btnSmallRed}
-                  >
-                    Admin
-                  </button>
+                  {["student", "teacher", "admin"].map((role) => (
+                    <button
+                      key={role}
+                      style={btnRole}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.background = "#2f6b4a")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.background = "#4caf7c")
+                      }
+                      onClick={() => updateRole(user.id, role)}
+                    >
+                      {role.charAt(0).toUpperCase() + role.slice(1)}
+                    </button>
+                  ))}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* BOTONES PARA ACCESOS ADICIONALES */}
+        {/* BOTONES ADICIONALES */}
         <div
           style={{
             marginTop: 30,
@@ -204,7 +198,7 @@ const tdStyle = {
   borderBottom: "1px solid #ccc",
 };
 
-const btnSmall = {
+const btnRole = {
   padding: "6px 12px",
   marginRight: 5,
   background: "#4caf7c",
@@ -212,15 +206,7 @@ const btnSmall = {
   color: "white",
   borderRadius: 6,
   cursor: "pointer",
-};
-
-const btnSmallRed = {
-  padding: "6px 12px",
-  background: "#c62828",
-  border: "none",
-  color: "white",
-  borderRadius: 6,
-  cursor: "pointer",
+  transition: "0.2s",
 };
 
 const mainBtn = {
@@ -231,4 +217,6 @@ const mainBtn = {
   borderRadius: 8,
   cursor: "pointer",
   fontWeight: "bold",
+  transition: "0.2s",
 };
+
