@@ -20,45 +20,39 @@ export default function RegisterPage() {
     setLoading(true);
     setErrorMsg("");
 
-    // 1. Crear usuario
-    const { data: userData, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    try {
+      // 1️⃣ Crear usuario en Supabase Auth
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (signUpError) {
-      setErrorMsg(signUpError.message);
+      if (signUpError) throw signUpError;
+      if (!signUpData.user) throw new Error("No se pudo crear el usuario.");
+
+      const userId = signUpData.user.id;
+
+      // 2️⃣ Insertar perfil en la tabla profiles
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert([
+          {
+            id: userId,       // ✅ debe ser exactamente el mismo user.id
+            full_name: fullName,
+            role: role,
+          },
+        ]);
+
+      if (profileError) throw profileError;
+
+      alert("Cuenta creada. Ahora inicia sesión.");
+      router.push("/login");
+
+    } catch (error: any) {
+      setErrorMsg(error.message || "Error desconocido al registrar usuario.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (!userData.user) {
-      setErrorMsg("No se pudo crear el usuario.");
-      setLoading(false);
-      return;
-    }
-
-    const userId = userData.user.id;
-
-    // 2. Crear perfil en la tabla profiles
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert([
-        {
-          id: userId,
-          full_name: fullName,
-          role: role,
-        },
-      ]);
-
-    if (profileError) {
-      setErrorMsg(profileError.message);
-      setLoading(false);
-      return;
-    }
-
-    alert("Cuenta creada. Ahora inicia sesión.");
-    router.push("/login");
   };
 
   return (
