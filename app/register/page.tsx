@@ -19,24 +19,24 @@ export default function RegisterPage() {
     setErrorMsg("");
 
     try {
-      // 🔹 Crear usuario en Auth
-      const { data, error } = await supabase.auth.signUp({
+      // 🔹 Crear usuario en Supabase Auth
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            full_name: fullName, // El trigger usará esto
+            full_name: fullName, // El trigger usará esto para crear el perfil
           },
         },
       });
 
       if (error) throw error;
 
-      // 🔹 Todo salió bien, no necesitamos insertar en profiles manualmente
+      // 🔹 Éxito: el trigger insertará automáticamente en profiles
       alert("Cuenta creada. Revisa tu correo para confirmar e inicia sesión.");
       router.push("/login");
     } catch (err: any) {
-      console.error("Register error:", err);
+      console.error("Error registrando usuario:", err);
       setErrorMsg(err.message || "Error desconocido al registrar el usuario.");
     } finally {
       setLoading(false);
