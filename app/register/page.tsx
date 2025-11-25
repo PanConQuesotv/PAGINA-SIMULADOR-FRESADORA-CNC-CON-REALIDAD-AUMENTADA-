@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -18,71 +19,119 @@ export default function RegisterPage() {
     setLoading(true);
     setErrorMsg("");
 
-    try {
-      // 1️⃣ Crear usuario en Auth
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName
+        },
+      },
+    });
 
-      if (error) throw error;
-      if (!data.user) throw new Error("No se pudo crear el usuario");
-
-      const userId = data.user.id;
-
-      // 2️⃣ Insertar en profiles con role por defecto "student"
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: userId,
-        full_name: fullName,
-        role: "student",
-      });
-
-      if (profileError) throw profileError;
-
-      alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
-      router.push("/login");
-    } catch (err: any) {
-      setErrorMsg(err.message || "Error desconocido");
-    } finally {
+    if (error) {
+      setErrorMsg(error.message);
       setLoading(false);
+      return;
     }
+
+    alert("Cuenta creada. Inicia sesión.");
+    router.push("/login");
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={formContainerStyle}>
-        <h1 style={titleStyle}>Crear Cuenta</h1>
+    <div
+      style={{
+        height: "100vh",
+        background: "#0d3b2e",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 400,
+          background: "#ffffff",
+          padding: 30,
+          borderRadius: 12,
+          boxShadow: "0 0 30px rgba(0,0,0,0.3)",
+          color: "#000",
+        }}
+      >
+        <h1 style={{ textAlign: "center", marginBottom: 20, color: "#000" }}>
+          Crear Cuenta
+        </h1>
+
         <form onSubmit={handleRegister}>
-          <label>Nombre Completo</label>
+          <label style={{ color: "#000" }}>Nombre Completo</label>
           <input
             type="text"
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            style={inputStyle}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
           />
 
-          <label>Email</label>
+          <label style={{ color: "#000" }}>Email</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={inputStyle}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
           />
 
-          <label>Contraseña</label>
+          <label style={{ color: "#000" }}>Contraseña</label>
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 20,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
           />
 
-          {errorMsg && <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>}
+          {errorMsg && (
+            <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>
+          )}
 
-          <button type="submit" disabled={loading} style={btnStyle}>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: 12,
+              background: "#0d3b2e",
+              color: "white",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
             {loading ? "Creando..." : "Registrarse"}
           </button>
         </form>
@@ -90,46 +139,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-// ==================== ESTILOS ====================
-const containerStyle: React.CSSProperties = {
-  height: "100vh",
-  background: "#0d3b2e",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: 20,
-};
-
-const formContainerStyle: React.CSSProperties = {
-  width: "100%",
-  maxWidth: 400,
-  background: "#ffffff",
-  padding: 30,
-  borderRadius: 12,
-  boxShadow: "0 0 30px rgba(0,0,0,0.3)",
-  color: "#000",
-};
-
-const titleStyle: React.CSSProperties = { textAlign: "center", marginBottom: 20 };
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: 10,
-  marginBottom: 12,
-  border: "1px solid #ccc",
-  borderRadius: 6,
-};
-
-const btnStyle: React.CSSProperties = {
-  width: "100%",
-  padding: 12,
-  background: "#0d3b2e",
-  color: "white",
-  border: "none",
-  borderRadius: 6,
-  cursor: "pointer",
-  fontWeight: "bold",
-};
-
-
