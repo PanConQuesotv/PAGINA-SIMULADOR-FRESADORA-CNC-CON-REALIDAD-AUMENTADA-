@@ -18,32 +18,34 @@ export default function RegisterPage() {
     setLoading(true);
     setErrorMsg("");
 
-    // 1️⃣ Crear usuario en Auth
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    try {
+      // 1️⃣ Crear usuario en Auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (error || !data.user) {
-      setErrorMsg(error?.message || "Error desconocido");
+      if (error) throw error;
+      if (!data.user) throw new Error("No se pudo crear el usuario");
+
+      const userId = data.user.id;
+
+      // 2️⃣ Insertar en profiles con role por defecto "student"
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: userId,
+        full_name: fullName,
+        role: "student",
+      });
+
+      if (profileError) throw profileError;
+
+      alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
+      router.push("/login");
+    } catch (err: any) {
+      setErrorMsg(err.message || "Error desconocido");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const userId = data.user.id;
-
-    // 2️⃣ Insertar perfil con rol "student" por defecto
-    const { error: profileError } = await supabase.from("profiles").insert({
-      id: userId,
-      full_name: fullName,
-      role: "student",
-    });
-
-    if (profileError) {
-      setErrorMsg(profileError.message);
-      setLoading(false);
-      return;
-    }
-
-    alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
-    router.push("/login");
   };
 
   return (
@@ -129,3 +131,5 @@ const btnStyle: React.CSSProperties = {
   cursor: "pointer",
   fontWeight: "bold",
 };
+
+
