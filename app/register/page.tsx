@@ -37,7 +37,7 @@ export default function RegisterPage() {
         .from("profiles")
         .insert([
           {
-            id: userId,       // ✅ debe ser exactamente el mismo user.id
+            id: userId,
             full_name: fullName,
             role: role,
           },
@@ -45,7 +45,7 @@ export default function RegisterPage() {
 
       if (profileError) throw profileError;
 
-      alert("Cuenta creada. Ahora inicia sesión.");
+      alert("Cuenta creada correctamente. Ahora inicia sesión.");
       router.push("/login");
 
     } catch (error: any) {
@@ -163,6 +163,8 @@ export default function RegisterPage() {
               borderRadius: 6,
               cursor: "pointer",
               fontWeight: "bold",
+
+              
             }}
           >
             {loading ? "Cargando..." : "Registrarse"}
