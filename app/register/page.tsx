@@ -19,36 +19,21 @@ export default function RegisterPage() {
     setErrorMsg("");
 
     try {
-      // 1️⃣ Crear usuario en Auth
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      // 🔹 Crear usuario en Auth
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName, // El trigger usará esto
+          },
+        },
       });
 
-      if (signUpError) throw signUpError;
-      if (!signUpData.user) throw new Error("No se pudo crear el usuario.");
+      if (error) throw error;
 
-      const userId = signUpData.user.id;
-
-      // 2️⃣ Revisar si el perfil ya existe
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("id", userId)
-        .single();
-
-      if (existingProfile) throw new Error("Ya existe un perfil para este usuario.");
-
-      // 3️⃣ Insertar en profiles con rol "student" por defecto
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: userId,
-        full_name: fullName,
-        role: "student",
-      });
-
-      if (profileError) throw profileError;
-
-      alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
+      // 🔹 Todo salió bien, no necesitamos insertar en profiles manualmente
+      alert("Cuenta creada. Revisa tu correo para confirmar e inicia sesión.");
       router.push("/login");
     } catch (err: any) {
       console.error("Register error:", err);
@@ -62,6 +47,7 @@ export default function RegisterPage() {
     <div style={containerStyle}>
       <div style={formContainerStyle}>
         <h1 style={titleStyle}>Crear Cuenta</h1>
+
         <form onSubmit={handleRegister}>
           <label>Nombre Completo</label>
           <input
