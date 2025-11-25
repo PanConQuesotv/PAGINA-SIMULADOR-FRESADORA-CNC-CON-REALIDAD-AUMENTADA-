@@ -10,10 +10,7 @@ export default function HomePage() {
       style={{
         height: "100vh",
         width: "100vw",
-        backgroundImage: "url('/logotipo.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        background: "#0b2f26", // verde oscuro elegante
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -24,14 +21,14 @@ export default function HomePage() {
         style={{
           width: "100%",
           maxWidth: 500,
-          background: "rgba(255, 255, 255, 0.92)",
+          background: "white",
           padding: 30,
           borderRadius: 14,
-          boxShadow: "0 0 25px rgba(0,0,0,0.35)",
+          boxShadow: "0 0 25px rgba(0,0,0,0.25)",
           textAlign: "center",
         }}
       >
-        <h1 style={{ fontSize: 30, fontWeight: "bold", marginBottom: 10 }}>
+        <h1 style={{ fontSize: 30, fontWeight: "bold", marginBottom: 10, color: "#000" }}>
           SIMULADOR DE FRESADORA CNC
         </h1>
 
@@ -41,6 +38,7 @@ export default function HomePage() {
             opacity: 0.8,
             marginBottom: 35,
             lineHeight: 1.3,
+            color: "#000",
           }}
         >
           CON REALIDAD AUMENTADA PARA LA UNIVERSIDAD DE CUNDINAMARCA
@@ -50,7 +48,7 @@ export default function HomePage() {
           <button
             style={{
               padding: "12px 26px",
-              background: "#4caf7c", // verde claro suave
+              background: "#4caf7c", // verde claro
               color: "white",
               border: "none",
               borderRadius: 8,
@@ -60,7 +58,7 @@ export default function HomePage() {
               transition: "0.2s",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "#2f6b4a")
+              (e.currentTarget.style.background = "#2f6b4a") // hover oscuro
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.background = "#4caf7c")
