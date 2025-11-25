@@ -20,35 +20,39 @@ export default function RegisterPage() {
 
     try {
       // 1️⃣ Crear usuario en Auth
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-      if (error) throw error;
-      if (!data.user) throw new Error("No se pudo crear el usuario");
+      if (signUpError) throw signUpError;
+      if (!signUpData.user) throw new Error("No se pudo crear el usuario.");
 
-      const userId = data.user.id;
+      const userId = signUpData.user.id;
 
-      // 2️⃣ Insertar en profiles, rol "student" por defecto
+      // 2️⃣ Revisar si el perfil ya existe
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", userId)
+        .single();
+
+      if (existingProfile) throw new Error("Ya existe un perfil para este usuario.");
+
+      // 3️⃣ Insertar en profiles con rol "student" por defecto
       const { error: profileError } = await supabase.from("profiles").insert({
         id: userId,
         full_name: fullName,
         role: "student",
       });
 
-      if (profileError) {
-        console.error("Error inserting profile:", profileError);
-        // Manejo de duplicado
-        if (profileError.code === "23505") {
-          throw new Error("El perfil ya existe para este usuario.");
-        } else {
-          throw profileError;
-        }
-      }
+      if (profileError) throw profileError;
 
       alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
       router.push("/login");
     } catch (err: any) {
       console.error("Register error:", err);
-      setErrorMsg(err.message || "Error desconocido al registrar el usuario");
+      setErrorMsg(err.message || "Error desconocido al registrar el usuario.");
     } finally {
       setLoading(false);
     }
