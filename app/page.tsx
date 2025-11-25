@@ -9,71 +9,90 @@ export default function HomePage() {
     <div
       style={{
         height: "100vh",
-        background: "#0b2f26",
+        width: "100vw",
+        backgroundImage: "url('/logotipo.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        flexDirection: "column",
-        textAlign: "center",
         padding: 20,
-        color: "white",
-        position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* Fondo con logo */}
-      <img
-        src="/logotipo.png"
-        alt="Logo"
+      <div
         style={{
-          position: "absolute",
-          width: "300px",
-          opacity: 0.2,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          pointerEvents: "none",
+          width: "100%",
+          maxWidth: 500,
+          background: "rgba(255, 255, 255, 0.92)",
+          padding: 30,
+          borderRadius: 14,
+          boxShadow: "0 0 25px rgba(0,0,0,0.35)",
+          textAlign: "center",
         }}
-      />
+      >
+        <h1 style={{ fontSize: 30, fontWeight: "bold", marginBottom: 10 }}>
+          SIMULADOR DE FRESADORA CNC
+        </h1>
 
-      <h1 style={{ fontSize: 32, fontWeight: "bold", marginBottom: 10, zIndex: 10 }}>
-        SIMULADOR DE FRESADORA CNC
-      </h1>
-
-      <h2 style={{ fontSize: 20, opacity: 0.9, marginBottom: 40, zIndex: 10 }}>
-        CON REALIDAD AUMENTADA PARA LA UNIVERSIDAD DE CUNDINAMARCA
-      </h2>
-
-      <div style={{ display: "flex", gap: 20, zIndex: 10 }}>
-        <button
+        <h2
           style={{
-            padding: "12px 24px",
-            background: "#1a5c4a",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontSize: 16,
+            fontSize: 18,
+            opacity: 0.8,
+            marginBottom: 35,
+            lineHeight: 1.3,
           }}
-          onClick={() => router.push("/login")}
         >
-          Login
-        </button>
+          CON REALIDAD AUMENTADA PARA LA UNIVERSIDAD DE CUNDINAMARCA
+        </h2>
 
-        <button
-          style={{
-            padding: "12px 24px",
-            background: "#2e8a6a",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontSize: 16,
-          }}
-          onClick={() => router.push("/register")}
-        >
-          Registrarse
-        </button>
+        <div style={{ display: "flex", gap: 20, justifyContent: "center" }}>
+          <button
+            style={{
+              padding: "12px 26px",
+              background: "#4caf7c", // verde claro suave
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              cursor: "pointer",
+              fontSize: 16,
+              fontWeight: "bold",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "#2f6b4a")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "#4caf7c")
+            }
+            onClick={() => router.push("/login")}
+          >
+            Login
+          </button>
+
+          <button
+            style={{
+              padding: "12px 26px",
+              background: "#4caf7c",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              cursor: "pointer",
+              fontSize: 16,
+              fontWeight: "bold",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "#2f6b4a")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "#4caf7c")
+            }
+            onClick={() => router.push("/register")}
+          >
+            Registrarse
+          </button>
+        </div>
       </div>
     </div>
   );
