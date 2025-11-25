@@ -29,17 +29,30 @@ export default function HomePage() {
           textAlign: "center",
         }}
       >
-        <h1
-          style={{
-            fontSize: 28,
-            fontWeight: "bold",
-            marginBottom: 10,
-            color: "#000",
-            lineHeight: 1.2,
-          }}
-        >
-          SIMULADOR DE FRESADORA CNC
-        </h1>
+<h1
+  style={{
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#000",
+    lineHeight: 1.2,
+  }}
+>
+  SIMULADOR DE FRESADORA CNC
+</h1>
+
+<h2
+  style={{
+    fontSize: 16,
+    color: "#000",
+    opacity: 0.9,
+    marginBottom: 35,
+    lineHeight: 1.3,
+  }}
+>
+  CON REALIDAD AUMENTADA PARA LA UNIVERSIDAD DE CUNDINAMARCA
+</h2>
+
 
         <h2
           style={{
