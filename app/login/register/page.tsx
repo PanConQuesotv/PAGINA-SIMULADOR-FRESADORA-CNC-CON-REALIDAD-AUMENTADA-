@@ -4,22 +4,31 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
 
+  const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: role,
+        },
+      },
     });
 
     if (error) {
@@ -28,29 +37,15 @@ export default function LoginPage() {
       return;
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user.id)
-      .single();
-
-    if (!profile) {
-      setErrorMsg("No se pudo obtener el rol");
-      setLoading(false);
-      return;
-    }
-
-    if (profile.role === "teacher") router.push("/teacher");
-    else router.push("/student");
-
-    setLoading(false);
+    alert("Cuenta creada. Ahora inicia sesión.");
+    router.push("/login");
   };
 
   return (
     <div
       style={{
         height: "100vh",
-        background: "#0d3b2e", // verde oscuro
+        background: "#0d3b2e",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -65,14 +60,30 @@ export default function LoginPage() {
           padding: 30,
           borderRadius: 12,
           boxShadow: "0 0 30px rgba(0,0,0,0.3)",
-          color: "#000", // <- texto negro
+          color: "#000",
         }}
       >
         <h1 style={{ textAlign: "center", marginBottom: 20, color: "#000" }}>
-          Iniciar Sesión
+          Crear Cuenta
         </h1>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegister}>
+          <label style={{ color: "#000" }}>Nombre Completo</label>
+          <input
+            type="text"
+            required
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
+          />
+
           <label style={{ color: "#000" }}>Email</label>
           <input
             type="email"
@@ -85,7 +96,7 @@ export default function LoginPage() {
               marginBottom: 12,
               border: "1px solid #ccc",
               borderRadius: 6,
-              color: "#000", // <- texto negro
+              color: "#000",
             }}
           />
 
@@ -101,9 +112,26 @@ export default function LoginPage() {
               marginBottom: 12,
               border: "1px solid #ccc",
               borderRadius: 6,
-              color: "#000", // <- texto negro
+              color: "#000",
             }}
           />
+
+          <label style={{ color: "#000" }}>Rol</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 20,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              color: "#000",
+            }}
+          >
+            <option value="student">Estudiante</option>
+            <option value="teacher">Docente</option>
+          </select>
 
           {errorMsg && (
             <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>
@@ -123,7 +151,7 @@ export default function LoginPage() {
               fontWeight: "bold",
             }}
           >
-            {loading ? "Cargando..." : "Ingresar"}
+            {loading ? "Cargando..." : "Registrarse"}
           </button>
         </form>
       </div>
