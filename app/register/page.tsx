@@ -20,19 +20,39 @@ export default function RegisterPage() {
     setLoading(true);
     setErrorMsg("");
 
-    const { data, error } = await supabase.auth.signUp({
+    // 1. Crear usuario
+    const { data: userData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
+    });
+
+    if (signUpError) {
+      setErrorMsg(signUpError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (!userData.user) {
+      setErrorMsg("No se pudo crear el usuario.");
+      setLoading(false);
+      return;
+    }
+
+    const userId = userData.user.id;
+
+    // 2. Crear perfil en la tabla profiles
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert([
+        {
+          id: userId,
           full_name: fullName,
           role: role,
         },
-      },
-    });
+      ]);
 
-    if (error) {
-      setErrorMsg(error.message);
+    if (profileError) {
+      setErrorMsg(profileError.message);
       setLoading(false);
       return;
     }
