@@ -27,19 +27,28 @@ export default function RegisterPage() {
 
       const userId = data.user.id;
 
-      // 2️⃣ Insertar en profiles con rol "student" por defecto
+      // 2️⃣ Insertar en profiles, rol "student" por defecto
       const { error: profileError } = await supabase.from("profiles").insert({
         id: userId,
         full_name: fullName,
         role: "student",
       });
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error("Error inserting profile:", profileError);
+        // Manejo de duplicado
+        if (profileError.code === "23505") {
+          throw new Error("El perfil ya existe para este usuario.");
+        } else {
+          throw profileError;
+        }
+      }
 
       alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
       router.push("/login");
     } catch (err: any) {
-      setErrorMsg(err.message || "Error desconocido");
+      console.error("Register error:", err);
+      setErrorMsg(err.message || "Error desconocido al registrar el usuario");
     } finally {
       setLoading(false);
     }
