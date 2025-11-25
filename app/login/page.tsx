@@ -13,38 +13,49 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMsg("");
+  e.preventDefault();
+  setLoading(true);
+  setErrorMsg("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  // 1️⃣ Login
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (error) {
-      setErrorMsg(error.message);
-      setLoading(false);
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user.id)
-      .single();
-
-    if (!profile) {
-      setErrorMsg("No se pudo obtener el rol");
-      setLoading(false);
-      return;
-    }
-
-    if (profile.role === "teacher") router.push("/teacher");
-    else router.push("/student");
-
+  if (error) {
+    setErrorMsg(error.message);
     setLoading(false);
-  };
+    return;
+  }
+
+  const user = data.user;
+
+  // 2️⃣ Buscar perfil
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile) {
+    setErrorMsg("No se pudo obtener el rol.");
+    setLoading(false);
+    return;
+  }
+
+  // 3️⃣ REDIRECCIÓN SEGÚN ROL
+  if (profile.role === "admin") {
+    router.push("/admin");
+  } else if (profile.role === "teacher") {
+    router.push("/teacher");
+  } else {
+    router.push("/student");
+  }
+
+  setLoading(false);
+};
+
 
   return (
     <div
