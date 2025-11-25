@@ -15,17 +15,18 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    const { data: signInData, error: signInError } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    // Login normal
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (signInError || !signInData.user) {
       setError("Correo o contraseña incorrectos");
       return;
     }
 
+    // Obtener el rol del perfil
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
@@ -37,6 +38,7 @@ export default function LoginPage() {
       return;
     }
 
+    // Redirigir según rol
     if (profile.role === "admin") router.push("/admin");
     else if (profile.role === "teacher") router.push("/teacher/classes");
     else router.push("/student");
@@ -46,7 +48,7 @@ export default function LoginPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#0A3A32", // verde oscuro más bonito
+        background: "#0b2f26",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -55,30 +57,22 @@ export default function LoginPage() {
     >
       <div
         style={{
-          background: "#ffffff",
+          background: "white",
           padding: 30,
-          borderRadius: 14,
+          borderRadius: 12,
           width: "100%",
           maxWidth: 400,
-          boxShadow: "0 4px 18px rgba(0,0,0,0.18)",
         }}
       >
-        <h1
-          style={{
-            textAlign: "center",
-            marginBottom: 20,
-            color: "#0A3A32",
-            fontWeight: "bold",
-          }}
-        >
+        <h1 style={{ textAlign: "center", marginBottom: 20, color: "#0d3b2e" }}>
           Iniciar Sesión
         </h1>
 
         {error && (
           <div
             style={{
-              background: "#ffe0e0",
-              color: "#b00000",
+              background: "#ffdddd",
+              color: "#a70000",
               padding: 10,
               borderRadius: 6,
               marginBottom: 15,
@@ -89,7 +83,7 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <label style={{ color: "#0A3A32", fontWeight: 500 }}>Email</label>
+          <label style={{ color: "#0d3b2e" }}>Email</label>
           <input
             type="email"
             value={email}
@@ -102,13 +96,12 @@ export default function LoginPage() {
               padding: 10,
               marginBottom: 15,
               borderRadius: 8,
-              border: "1px solid #aac4c0",
+              border: "1px solid #ccc",
+              color: "black", // ← FIX
             }}
           />
 
-          <label style={{ color: "#0A3A32", fontWeight: 500 }}>
-            Contraseña
-          </label>
+          <label style={{ color: "#0d3b2e" }}>Contraseña</label>
           <input
             type="password"
             value={password}
@@ -121,7 +114,8 @@ export default function LoginPage() {
               padding: 10,
               marginBottom: 20,
               borderRadius: 8,
-              border: "1px solid #aac4c0",
+              border: "1px solid #ccc",
+              color: "black", // ← FIX
             }}
           />
 
@@ -130,20 +124,13 @@ export default function LoginPage() {
             style={{
               width: "100%",
               padding: 12,
-              background: "#116149",
+              background: "#0d3b2e",
               color: "white",
               border: "none",
               borderRadius: 8,
               cursor: "pointer",
               fontWeight: "bold",
-              transition: "0.2s",
             }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.background = "#0d4f3a")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.background = "#116149")
-            }
           >
             Entrar
           </button>
