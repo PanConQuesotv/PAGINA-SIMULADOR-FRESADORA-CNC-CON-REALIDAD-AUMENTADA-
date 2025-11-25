@@ -7,21 +7,16 @@ import { useRouter } from "next/navigation";
 export default function LoginPage() {
   const router = useRouter();
 
-  // Campos del formulario
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Estados de UI
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Función de login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
 
-    // 1. Autenticar con Supabase
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -33,7 +28,6 @@ export default function LoginPage() {
       return;
     }
 
-    // 2. Obtener el perfil para saber el rol
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -41,19 +35,13 @@ export default function LoginPage() {
       .single();
 
     if (!profile) {
-      setErrorMsg("No se pudo obtener el rol del usuario.");
+      setErrorMsg("No se pudo obtener el rol");
       setLoading(false);
       return;
     }
 
-    // 3. Redirigir según rol
-    if (profile.role === "teacher") {
-      router.push("/teacher");
-    } else if (profile.role === "student") {
-      router.push("/student");
-    } else {
-      setErrorMsg("Rol desconocido.");
-    }
+    if (profile.role === "teacher") router.push("/teacher");
+    else router.push("/student");
 
     setLoading(false);
   };
@@ -61,54 +49,79 @@ export default function LoginPage() {
   return (
     <div
       style={{
-        maxWidth: 400,
-        margin: "60px auto",
-        padding: 20,
-        borderRadius: 10,
-        background: "#f0f0f0"
+        height: "100vh",
+        background: "#0d3b2e", // verde oscuro
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20
       }}
     >
-      <h1 style={{ textAlign: "center" }}>Iniciar Sesión</h1>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 400,
+          background: "#ffffff",
+          padding: 30,
+          borderRadius: 12,
+          boxShadow: "0 0 30px rgba(0,0,0,0.3)",
+        }}
+      >
+        <h1 style={{ textAlign: "center", marginBottom: 20 }}>Iniciar Sesión</h1>
 
-      <form onSubmit={handleLogin}>
-        <label>Email</label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ width: "100%", padding: 8, marginBottom: 12 }}
-        />
+        <form onSubmit={handleLogin}>
+          <label>Email</label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6
+            }}
+          />
 
-        <label>Contraseña</label>
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ width: "100%", padding: 8, marginBottom: 12 }}
-        />
+          <label>Contraseña</label>
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 12,
+              border: "1px solid #ccc",
+              borderRadius: 6
+            }}
+          />
 
-        {errorMsg && (
-          <p style={{ color: "red", marginBottom: 10 }}>{errorMsg}</p>
-        )}
+          {errorMsg && (
+            <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>
+          )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            background: "#0070f3",
-            color: "white",
-            border: "none",
-            borderRadius: 5,
-            cursor: "pointer"
-          }}
-        >
-          {loading ? "Cargando..." : "Ingresar"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: 12,
+              background: "#0d3b2e",
+              color: "white",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: "bold"
+            }}
+          >
+            {loading ? "Cargando..." : "Ingresar"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
