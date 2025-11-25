@@ -15,18 +15,17 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    // Login normal
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data: signInData, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (signInError || !signInData.user) {
       setError("Correo o contraseña incorrectos");
       return;
     }
 
-    // Obtener el perfil y rol
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
@@ -38,7 +37,6 @@ export default function LoginPage() {
       return;
     }
 
-    // Redirigir según el rol
     if (profile.role === "admin") router.push("/admin");
     else if (profile.role === "teacher") router.push("/teacher/classes");
     else router.push("/student");
@@ -48,7 +46,7 @@ export default function LoginPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#0b2f26",
+        background: "#0A3A32", // verde oscuro más bonito
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -57,20 +55,30 @@ export default function LoginPage() {
     >
       <div
         style={{
-          background: "white",
+          background: "#ffffff",
           padding: 30,
-          borderRadius: 12,
+          borderRadius: 14,
           width: "100%",
           maxWidth: 400,
+          boxShadow: "0 4px 18px rgba(0,0,0,0.18)",
         }}
       >
-        <h1 style={{ textAlign: "center", marginBottom: 20 }}>Iniciar Sesión</h1>
+        <h1
+          style={{
+            textAlign: "center",
+            marginBottom: 20,
+            color: "#0A3A32",
+            fontWeight: "bold",
+          }}
+        >
+          Iniciar Sesión
+        </h1>
 
         {error && (
           <div
             style={{
-              background: "#ffdddd",
-              color: "#a70000",
+              background: "#ffe0e0",
+              color: "#b00000",
               padding: 10,
               borderRadius: 6,
               marginBottom: 15,
@@ -81,7 +89,7 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <label>Email</label>
+          <label style={{ color: "#0A3A32", fontWeight: 500 }}>Email</label>
           <input
             type="email"
             value={email}
@@ -94,11 +102,13 @@ export default function LoginPage() {
               padding: 10,
               marginBottom: 15,
               borderRadius: 8,
-              border: "1px solid #ccc",
+              border: "1px solid #aac4c0",
             }}
           />
 
-          <label>Contraseña</label>
+          <label style={{ color: "#0A3A32", fontWeight: 500 }}>
+            Contraseña
+          </label>
           <input
             type="password"
             value={password}
@@ -111,7 +121,7 @@ export default function LoginPage() {
               padding: 10,
               marginBottom: 20,
               borderRadius: 8,
-              border: "1px solid #ccc",
+              border: "1px solid #aac4c0",
             }}
           />
 
@@ -120,13 +130,20 @@ export default function LoginPage() {
             style={{
               width: "100%",
               padding: 12,
-              background: "#0d3b2e",
+              background: "#116149",
               color: "white",
               border: "none",
               borderRadius: 8,
               cursor: "pointer",
               fontWeight: "bold",
+              transition: "0.2s",
             }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.background = "#0d4f3a")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.background = "#116149")
+            }
           >
             Entrar
           </button>
