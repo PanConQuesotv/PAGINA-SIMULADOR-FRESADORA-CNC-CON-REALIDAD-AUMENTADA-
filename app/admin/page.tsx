@@ -43,14 +43,17 @@ export default function AdminPage() {
     setLoading(false);
   };
 
-  // --- CAMBIAR ROL ---
+  // --- CAMBIAR ROL SIN REORDENAR ---
   const updateRole = async (id: string, newRole: string) => {
     await supabase
       .from("profiles")
       .update({ role: newRole })
       .eq("id", id);
 
-    loadUsers();
+    // Actualizar localmente sin recargar toda la lista
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, role: newRole } : u))
+    );
   };
 
   // --- CERRAR SESIÓN ---
@@ -109,7 +112,10 @@ export default function AdminPage() {
             border: "none",
             borderRadius: 8,
             cursor: "pointer",
+            transition: "0.2s",
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#a81f1f")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#c62828")}
         >
           Cerrar Sesión
         </button>
@@ -161,31 +167,54 @@ export default function AdminPage() {
             justifyContent: "center",
           }}
         >
-          <button
-            style={mainBtn}
+          <HoverButton
+            label="Gestionar Clases"
+            color="#0d3b2e"
+            hoverColor="#2f6b4a"
             onClick={() => router.push("/teacher/classes")}
-          >
-            Gestionar Clases
-          </button>
-
-          <button
-            style={mainBtn}
+          />
+          <HoverButton
+            label="Gestionar Asignaciones"
+            color="#0d3b2e"
+            hoverColor="#2f6b4a"
             onClick={() => router.push("/teacher/assignments")}
-          >
-            Gestionar Asignaciones
-          </button>
-
-          <button
-            style={mainBtn}
+          />
+          <HoverButton
+            label="Ver Respuestas"
+            color="#0d3b2e"
+            hoverColor="#2f6b4a"
             onClick={() => router.push("/admin/attempts")}
-          >
-            Ver Respuestas
-          </button>
+          />
         </div>
       </div>
     </div>
   );
 }
+
+// ---- COMPONENTE BOTÓN CON HOVER ----
+interface HoverButtonProps {
+  label: string;
+  color: string;
+  hoverColor: string;
+  onClick: () => void;
+}
+
+const HoverButton = ({ label, color, hoverColor, onClick }: HoverButtonProps) => {
+  const [bg, setBg] = useState(color);
+  return (
+    <button
+      style={{
+        ...mainBtn,
+        background: bg,
+      }}
+      onMouseEnter={() => setBg(hoverColor)}
+      onMouseLeave={() => setBg(color)}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+};
 
 // ---- ESTILOS ----
 const thStyle = {
@@ -211,7 +240,6 @@ const btnRole = {
 
 const mainBtn = {
   padding: "12px 20px",
-  background: "#0d3b2e",
   color: "white",
   border: "none",
   borderRadius: 8,
@@ -219,4 +247,3 @@ const mainBtn = {
   fontWeight: "bold",
   transition: "0.2s",
 };
-
