@@ -10,14 +10,13 @@ export default function HomePage() {
       style={{
         height: "100vh",
         width: "100vw",
-        background: "#0b2f26", // verde oscuro
+        background: "#0b2f26", 
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
       }}
     >
-      {/* CAJA BLANCA QUE FALTABA */}
       <div
         style={{
           width: "100%",
@@ -29,34 +28,22 @@ export default function HomePage() {
           textAlign: "center",
         }}
       >
-<h1
-  style={{
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#000",
-    lineHeight: 1.2,
-  }}
->
-  SIMULADOR DE FRESADORA CNC
-</h1>
-
-<h2
-  style={{
-    fontSize: 16,
-    color: "#000",
-    opacity: 0.9,
-    marginBottom: 35,
-    lineHeight: 1.3,
-  }}
->
-  CON REALIDAD AUMENTADA PARA LA UNIVERSIDAD DE CUNDINAMARCA
-</h2>
-
+        <h1
+          style={{
+            fontSize: 28,
+            fontWeight: "bold",    // negrilla
+            marginBottom: 10,
+            color: "#000",
+            lineHeight: 1.2,
+          }}
+        >
+          SIMULADOR DE FRESADORA CNC
+        </h1>
 
         <h2
           style={{
             fontSize: 16,
+            fontWeight: "bold",     // ← AHORA SÍ TODO EN NEGRILLA
             color: "#000",
             opacity: 0.9,
             marginBottom: 35,
@@ -79,12 +66,8 @@ export default function HomePage() {
               fontWeight: "bold",
               transition: "0.2s",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "#2f6b4a")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "#4caf7c")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#2f6b4a")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#4caf7c")}
             onClick={() => router.push("/login")}
           >
             Login
@@ -102,12 +85,8 @@ export default function HomePage() {
               fontWeight: "bold",
               transition: "0.2s",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "#2f6b4a")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "#4caf7c")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#2f6b4a")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#4caf7c")}
             onClick={() => router.push("/register")}
           >
             Registrarse
