@@ -17,32 +17,44 @@ export default function HomePage() {
         padding: 20,
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 500,
-          background: "white",
-          padding: 30,
-          borderRadius: 14,
-          boxShadow: "0 0 25px rgba(0,0,0,0.25)",
-          textAlign: "center",
-        }}
-      >
-        <h1 style={{ fontSize: 30, fontWeight: "bold", marginBottom: 10, color: "#000" }}>
-          SIMULADOR DE FRESADORA CNC
-        </h1>
+     <div
+  style={{
+    width: "100%",
+    maxWidth: 450,
+    margin: "0 auto",
+  }}
+>
+  <h1
+    style={{
+      fontSize: 28,
+      fontWeight: "bold",
+      marginBottom: 10,
+      color: "#000",
+      textAlign: "center",
+      lineHeight: 1.2,
+    }}
+  >
+    SIMULADOR DE FRESADORA CNC
+  </h1>
 
-        <h2
-          style={{
-            fontSize: 18,
-            opacity: 0.8,
-            marginBottom: 35,
-            lineHeight: 1.3,
-            color: "#000",
-          }}
-        >
-          CON REALIDAD AUMENTADA PARA LA UNIVERSIDAD DE CUNDINAMARCA
-        </h2>
+  <h2
+    style={{
+      fontSize: 16,
+      color: "#000",
+      opacity: 0.9,
+      marginBottom: 35,
+      textAlign: "center",
+      lineHeight: 1.3,
+      maxWidth: 450,
+      margin: "0 auto 35px",
+      paddingLeft: 10,
+      paddingRight: 10,
+    }}
+  >
+    CON REALIDAD AUMENTADA PARA LA UNIVERSIDAD DE CUNDINAMARCA
+  </h2>
+
+
 
         <div style={{ display: "flex", gap: 20, justifyContent: "center" }}>
           <button
