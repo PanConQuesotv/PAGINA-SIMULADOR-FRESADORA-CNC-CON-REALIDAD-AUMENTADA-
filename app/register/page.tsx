@@ -10,7 +10,6 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -19,18 +18,31 @@ export default function RegisterPage() {
     setLoading(true);
     setErrorMsg("");
 
+    // 1️⃣ Crear usuario en Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: fullName
-        },
-      },
     });
 
-    if (error) {
-      setErrorMsg(error.message);
+    if (error || !data.user) {
+      setErrorMsg(error?.message || "Error desconocido");
+      setLoading(false);
+      return;
+    }
+
+    const userId = data.user.id;
+
+    // 2️⃣ Insertar perfil en la tabla profiles con role = 'student' por defecto
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert({
+        id: userId,
+        full_name: fullName,
+        role: "student",
+      });
+
+    if (profileError) {
+      setErrorMsg(profileError.message);
       setLoading(false);
       return;
     }
@@ -61,77 +73,39 @@ export default function RegisterPage() {
           color: "#000",
         }}
       >
-        <h1 style={{ textAlign: "center", marginBottom: 20, color: "#000" }}>
-          Crear Cuenta
-        </h1>
+        <h1 style={{ textAlign: "center", marginBottom: 20 }}>Crear Cuenta</h1>
 
         <form onSubmit={handleRegister}>
-          <label style={{ color: "#000" }}>Nombre Completo</label>
+          <label>Nombre Completo</label>
           <input
             type="text"
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 12,
-              border: "1px solid #ccc",
-              borderRadius: 6,
-              color: "#000",
-            }}
+            style={inputStyle}
           />
 
-          <label style={{ color: "#000" }}>Email</label>
+          <label>Email</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 12,
-              border: "1px solid #ccc",
-              borderRadius: 6,
-              color: "#000",
-            }}
+            style={inputStyle}
           />
 
-          <label style={{ color: "#000" }}>Contraseña</label>
+          <label>Contraseña</label>
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 20,
-              border: "1px solid #ccc",
-              borderRadius: 6,
-              color: "#000",
-            }}
+            style={inputStyle}
           />
 
-          {errorMsg && (
-            <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>
-          )}
+          {errorMsg && <p style={{ color: "red", marginBottom: 12 }}>{errorMsg}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: 12,
-              background: "#0d3b2e",
-              color: "white",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
+          <button type="submit" disabled={loading} style={btnStyle}>
             {loading ? "Creando..." : "Registrarse"}
           </button>
         </form>
@@ -139,3 +113,22 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: 10,
+  marginBottom: 12,
+  border: "1px solid #ccc",
+  borderRadius: 6,
+};
+
+const btnStyle: React.CSSProperties = {
+  width: "100%",
+  padding: 12,
+  background: "#0d3b2e",
+  color: "white",
+  border: "none",
+  borderRadius: 6,
+  cursor: "pointer",
+  fontWeight: "bold",
+};
